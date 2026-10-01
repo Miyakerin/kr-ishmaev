@@ -148,7 +148,12 @@ h2 { margin: 0; color: #e6edf4; font-size: 13px; font-weight: 700; letter-spacin
 .chart-legend { display: flex; align-items: center; gap: 15px; padding-top: 3px; color: #9ba7b4; font-size: 8px; }
 .chart-legend span { display: flex; align-items: center; gap: 6px; }
 .chart-legend i { display: block; width: 7px; height: 7px; border-radius: 50%; }
+.chart-legend b { color: #d3dce5; font-family: 'DM Mono',monospace; font-size: 8px; font-weight: 400; }
+.resource-legend { max-width: 72%; flex-wrap: wrap; justify-content: flex-end; column-gap: 13px; row-gap: 6px; }
+.resource-legend span { white-space: nowrap; }
+.chart-current { padding: 5px 8px; border: 1px solid #284449; border-radius: 6px; background: #142429; color: #83d4dc; font-family: 'DM Mono',monospace; font-size: 9px; }
 .legend-conflict { background: #f49b45; }.legend-denied { background: #e87887; }
+.request-footnote-dot { background: #59c8d1; }.resource-footnote-dot { background: #a58de2; }
 .chart-wrap { position: relative; margin-top: 11px; padding-left: 31px; }
 .activity-chart { display: block; width: 100%; height: auto; overflow: visible; }
 .chart-grid-line { stroke: #27323e; stroke-dasharray: 3 5; stroke-width: 1; }
@@ -215,6 +220,6 @@ h2 { margin: 0; color: #e6edf4; font-size: 13px; font-weight: 700; letter-spacin
   .service-overview,.metric-grid,.lower-grid { grid-template-columns: 1fr; }.service-overview { gap: 9px; }.service-card,.posture-card { min-height: 140px; }.posture-card { grid-column: auto; }
   .page-heading { flex-direction: column; }.live-state { padding-top: 0; }.eyebrow { font-size: 8px; } h1 { font-size: 25px; }
   .section-title-row { align-items: flex-start; flex-direction: column; gap: 10px; }.window-switch { width: 100%; }.window-button { flex: 1; }
-  .chart-legend { gap: 9px; font-size: 7px; }.activity-card { padding: 13px 11px 11px; }.activity-header { gap: 8px; }
+  .chart-legend { gap: 9px; font-size: 7px; }.activity-card { padding: 13px 11px 11px; }.activity-header { gap: 8px; }.resource-legend { max-width: 100%; width: 100%; justify-content: flex-start; }
   .event-row { grid-template-columns: 43px 1fr auto; gap: 6px; }.events-foot { flex-wrap: wrap; }.page-footer { flex-direction: column; }
 }

@@ -102,6 +102,69 @@
     $('#chart-x-labels').innerHTML = windowLabels[currentWindow].map((label) => `<span>${label}</span>`).join('');
   }
 
+  function renderTrendChart({
+    buckets, gridId, linesId, pointsId, yMaxId, yMidId, xLabelsId, series,
+    fixedMax = null, axisSuffix = '',
+  }) {
+    const left = 8;
+    const right = 890;
+    const top = 10;
+    const bottom = 210;
+    const xFor = (index) => left + (index / Math.max(1, buckets.length - 1)) * (right - left);
+    const allValues = series.flatMap((item) =>
+      buckets.map((bucket) => bucket[item.key]).filter((value) => value !== null && value !== undefined));
+    const largest = Math.max(0, ...allValues);
+    const maxValue = fixedMax ?? Math.max(20, Math.ceil(largest / 20) * 20);
+    const yFor = (value) => bottom - (value / maxValue) * (bottom - top);
+    const grid = [top, (top + bottom) / 2, bottom]
+      .map((y) => `<line class="chart-grid-line" x1="${left}" y1="${y}" x2="${right}" y2="${y}"/>`)
+      .join('');
+
+    $(gridId).innerHTML = grid;
+    $(yMaxId).textContent = `${maxValue}${axisSuffix}`;
+    $(yMidId).textContent = `${Math.round(maxValue / 2)}${axisSuffix}`;
+    $(xLabelsId).innerHTML = windowLabels[currentWindow].map((label) => `<span>${label}</span>`).join('');
+
+    const lineMarkup = [];
+    const pointMarkup = [];
+    for (const item of series) {
+      const values = buckets.map((bucket) => bucket[item.key]);
+      const observed = values
+        .map((value, index) => value !== null && value !== undefined ? index : -1)
+        .filter((index) => index >= 0);
+      if (!observed.length) continue;
+
+      const first = observed[0];
+      const last = observed[observed.length - 1];
+      for (let index = first + 1; index < last; index += 1) {
+        if (values[index] !== null && values[index] !== undefined) continue;
+        let previous = index - 1;
+        while (values[previous] === null || values[previous] === undefined) previous -= 1;
+        let next = index + 1;
+        while (values[next] === null || values[next] === undefined) next += 1;
+        const ratio = (index - previous) / (next - previous);
+        values[index] = values[previous] + (values[next] - values[previous]) * ratio;
+      }
+
+      const linePoints = values
+        .slice(first, last + 1)
+        .map((value, offset) => {
+          const index = first + offset;
+          return `${xFor(index).toFixed(1)},${yFor(value).toFixed(1)}`;
+        })
+        .join(' ');
+      lineMarkup.push(`<polyline class="chart-line trend-chart-line" points="${linePoints}" style="stroke:${item.color}"/>`);
+
+      const lastValue = values[last];
+      pointMarkup.push(`<circle class="chart-point" cx="${xFor(last)}" cy="${yFor(lastValue)}" r="3.5" fill="${item.color}"/>`);
+      if (item.currentId) {
+        $(item.currentId).textContent = item.formatter(lastValue);
+      }
+    }
+    $(linesId).innerHTML = lineMarkup.join('');
+    $(pointsId).innerHTML = pointMarkup.join('');
+  }
+
   async function refresh() {
     try {
       const response = await fetch(`/api/metrics/?window=${encodeURIComponent(currentWindow)}`, {
@@ -114,10 +177,39 @@
       $('#denied-value').textContent = numberFormat.format(data.metrics.denied);
       $('#conflicts-rate').textContent = `${numberFormat.format(data.metrics.conflictsPerMinute)} / мин`;
       $('#denied-rate').textContent = `${numberFormat.format(data.metrics.deniedPerMinute)} / мин`;
+      $('#requests-current').textContent = `${numberFormat.format(data.metrics.requestsPerSecond)} req/s`;
       setStatus('hadoop', data.services.hadoop.up, data.services.hadoop.uptime);
       setStatus('policy', data.services.policy.up, data.services.policy.uptime);
       Object.entries(data.sync).forEach(([name, up]) => setSyncStatus(name, up));
       renderChart(data.chart);
+      renderTrendChart({
+        buckets: data.chart,
+        gridId: '#request-grid',
+        linesId: '#request-lines',
+        pointsId: '#request-points',
+        yMaxId: '#request-y-max',
+        yMidId: '#request-y-mid',
+        xLabelsId: '#request-x-labels',
+        axisSuffix: ' req/s',
+        series: [{ key: 'requestsPerSecond', color: '#59c8d1' }],
+      });
+      renderTrendChart({
+        buckets: data.chart,
+        gridId: '#resource-grid',
+        linesId: '#resource-lines',
+        pointsId: '#resource-points',
+        yMaxId: '#resource-y-max',
+        yMidId: '#resource-y-mid',
+        xLabelsId: '#resource-x-labels',
+        fixedMax: 100,
+        axisSuffix: '%',
+        series: [
+          { key: 'hadoopCpu', color: '#59c8d1', currentId: '#hadoop-cpu-current', formatter: (value) => `${Math.round(value)}%` },
+          { key: 'hadoopRam', color: '#8b9cf4', currentId: '#hadoop-ram-current', formatter: (value) => `${Math.round(value)}%` },
+          { key: 'policyCpu', color: '#f0a45b', currentId: '#policy-cpu-current', formatter: (value) => `${Math.round(value)}%` },
+          { key: 'policyRam', color: '#d57fd1', currentId: '#policy-ram-current', formatter: (value) => `${Math.round(value)}%` },
+        ],
+      });
       renderEvents(data.events);
       $('#last-sync').textContent = moscowTime.format(new Date(data.generatedAt));
       $('#last-updated').textContent = moscowTime.format(new Date(data.generatedAt));

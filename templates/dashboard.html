@@ -167,6 +167,41 @@
           <div class="chart-footnote"><span class="chart-footnote-dot"></span> Данные генерируются в реальном времени · интервал обновления 3 сек.</div>
         </section>
 
+        <section class="activity-card">
+          <div class="activity-header">
+            <div><h2>Запросы в секунду</h2><p>Скорость обработки запросов во временном срезе</p></div>
+            <span class="chart-current" id="requests-current">— req/s</span>
+          </div>
+          <div class="chart-wrap">
+            <svg class="activity-chart" viewBox="0 0 900 250" role="img" aria-label="График скорости запросов в секунду">
+              <g id="request-grid"></g><g id="request-lines"></g><g id="request-points"></g>
+            </svg>
+            <div class="chart-y-labels"><span id="request-y-max">—</span><span id="request-y-mid">—</span><span>0</span></div>
+          </div>
+          <div class="chart-x-labels" id="request-x-labels"><span>Начало периода</span><span>Сейчас</span></div>
+          <div class="chart-footnote"><span class="chart-footnote-dot request-footnote-dot"></span> Моковая интенсивность запросов · среднее значение в каждой точке</div>
+        </section>
+
+        <section class="activity-card">
+          <div class="activity-header">
+            <div><h2>Использование ресурсов</h2><p>Загрузка CPU и использование RAM сервисами</p></div>
+            <div class="chart-legend resource-legend">
+              <span><i style="background:#59c8d1"></i>Hadoop CPU <b id="hadoop-cpu-current">—%</b></span>
+              <span><i style="background:#8b9cf4"></i>Hadoop RAM <b id="hadoop-ram-current">—%</b></span>
+              <span><i style="background:#f0a45b"></i>Policy CPU <b id="policy-cpu-current">—%</b></span>
+              <span><i style="background:#d57fd1"></i>Policy RAM <b id="policy-ram-current">—%</b></span>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <svg class="activity-chart" viewBox="0 0 900 250" role="img" aria-label="График CPU и RAM для Hadoop и PolicyConsistency">
+              <g id="resource-grid"></g><g id="resource-lines"></g><g id="resource-points"></g>
+            </svg>
+            <div class="chart-y-labels"><span id="resource-y-max">100%</span><span id="resource-y-mid">50%</span><span>0%</span></div>
+          </div>
+          <div class="chart-x-labels" id="resource-x-labels"><span>Начало периода</span><span>Сейчас</span></div>
+          <div class="chart-footnote"><span class="chart-footnote-dot resource-footnote-dot"></span> CPU и RAM — сгенерированные значения загрузки сервисов</div>
+        </section>
+
         <section class="lower-grid">
           <article class="integration-card" id="integrations">
             <div class="lower-card-heading"><div><h2>Синхронизация политик</h2><p>Состояние целевых систем</p></div><span class="integration-count"><i></i> 4 системы</span></div>

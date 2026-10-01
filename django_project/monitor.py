@@ -43,6 +43,13 @@ class MockTelemetry:
         self.events = deque(maxlen=250)
         self.status = {"hadoop": True, "policy": True}
         self.recover_at = {"hadoop": 0.0, "policy": 0.0}
+        self.load_metrics = {
+            "requestsPerSecond": random.uniform(32, 78),
+            "hadoopCpu": random.uniform(24, 56),
+            "hadoopRam": random.uniform(42, 74),
+            "policyCpu": random.uniform(12, 38),
+            "policyRam": random.uniform(28, 60),
+        }
         self._record_sample(self.started_at)
 
     @staticmethod
@@ -70,6 +77,7 @@ class MockTelemetry:
             random.choices([0, 1, 2, 3, 4], [0.25, 0.30, 0.25, 0.15, 0.05])[0]
             if policy_up else 0
         )
+        self._advance_load_metrics()
 
         sample = {
             "timestamp": timestamp,
@@ -81,6 +89,7 @@ class MockTelemetry:
             "hdfs": hdfs_up,
             "acl": acl_up,
             "hive": hive_up,
+            **self.load_metrics,
         }
         self.samples.append(sample)
 
@@ -90,6 +99,25 @@ class MockTelemetry:
         for _ in range(denied_count):
             title, source = random.choice(RECENT_EVENT_TEXT["denied"])
             self._add_event(timestamp, "denied", title, source, 403)
+
+    def _advance_load_metrics(self):
+        bounds = {
+            "requestsPerSecond": (8, 160, 14),
+            "hadoopCpu": (12, 92, 8),
+            "hadoopRam": (32, 90, 2.5),
+            "policyCpu": (6, 86, 8),
+            "policyRam": (22, 82, 2.5),
+        }
+        for name, (minimum, maximum, jitter) in bounds.items():
+            self.load_metrics[name] = round(
+                min(maximum, max(minimum, self.load_metrics[name] + random.uniform(-jitter, jitter))),
+                1,
+            )
+        if random.random() < 0.08:
+            self.load_metrics["requestsPerSecond"] = round(
+                min(160, self.load_metrics["requestsPerSecond"] + random.uniform(12, 36)),
+                1,
+            )
 
     def _add_event(self, timestamp, kind, title, source, status_code):
         self.events.appendleft({
@@ -131,8 +159,20 @@ class MockTelemetry:
             current = samples[-1]
             buckets = 30
             bucket_width = WINDOWS[window] / buckets
+            load_metric_names = (
+                "requestsPerSecond",
+                "hadoopCpu",
+                "hadoopRam",
+                "policyCpu",
+                "policyRam",
+            )
             chart = [
-                {"conflicts": 0, "denied": 0}
+                {
+                    "conflicts": 0,
+                    "denied": 0,
+                    "samples": 0,
+                    **{name: 0.0 for name in load_metric_names},
+                }
                 for _ in range(buckets)
             ]
             for sample in window_samples:
@@ -142,6 +182,17 @@ class MockTelemetry:
                 )
                 chart[index]["conflicts"] += sample["conflicts"]
                 chart[index]["denied"] += sample["denied"]
+                chart[index]["samples"] += 1
+                for name in load_metric_names:
+                    chart[index][name] += sample[name]
+
+            for bucket in chart:
+                count = bucket.pop("samples")
+                for name in load_metric_names:
+                    bucket[name] = (
+                        round(bucket[name] / count, 1)
+                        if count else None
+                    )
 
             latest_minute = [item for item in samples if item["timestamp"] >= now - 60]
             session_samples = samples
@@ -164,6 +215,7 @@ class MockTelemetry:
                     "deniedPerMinute": round(
                         sum(item["denied"] for item in latest_minute), 1
                     ),
+                    "requestsPerSecond": current["requestsPerSecond"],
                 },
                 "services": {
                     "hadoop": {
