@@ -1,0 +1,196 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0f17">
+  <link rel="icon" href="data:,">
+  <title>PolicyConsistency — мониторинг безопасности</title>
+  <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="PolicyConsistency, главная">
+        <span class="brand-mark">
+          <svg viewBox="0 0 36 36" aria-hidden="true"><path d="M18 3.5 29 7.8v8.7c0 7.4-4.6 12.8-11 16-6.4-3.2-11-8.6-11-16V7.8L18 3.5Z"/><path d="m12.5 18.2 3.7 3.7 7.5-8"/></svg>
+        </span>
+        <span class="brand-copy"><strong>Policy<span>Consistency</span></strong><small>SECURITY OBSERVABILITY</small></span>
+      </a>
+
+      <div class="workspace-switch">
+        <span class="workspace-icon">P</span>
+        <span class="workspace-copy"><strong>Платформа данных</strong><small>Production · Москва</small></span>
+        <span class="chevron">⌄</span>
+      </div>
+
+      <div class="nav-label">РАБОЧАЯ ОБЛАСТЬ</div>
+      <nav class="main-nav" aria-label="Основная навигация">
+        <a class="nav-item active" href="#overview">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+          <span>Обзор</span><span class="nav-active-dot"></span>
+        </a>
+        <a class="nav-item" href="#activity">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V6m0 12h16"/><path d="m7 14 3.4-3.6 3.1 2.3L19 7"/></svg>
+          <span>События и метрики</span>
+        </a>
+        <a class="nav-item" href="#integrations">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="7" height="6" rx="1.5"/><rect x="13.5" y="14" width="7" height="6" rx="1.5"/><path d="M10.5 7h3a2 2 0 0 1 2 2v5"/></svg>
+          <span>Интеграции</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="security-note">
+          <span class="note-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v6c0 5-3.2 8.1-8 10-4.8-1.9-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg>
+          </span>
+          <div><strong>Fail-closed PDP</strong><p>При конфликте доступ запрещён</p></div>
+        </div>
+        <div class="profile">
+          <span class="avatar">SA</span>
+          <span><strong>Системный администратор</strong><small>Мониторинг безопасности</small></span>
+          <span class="profile-dots">···</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content" id="overview">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Платформа данных</span><span class="crumb-slash">/</span><strong>Мониторинг</strong></div>
+        <div class="topbar-right">
+          <span class="environment"><i></i> MOCK ENVIRONMENT</span>
+          <span class="topbar-divider"></span>
+          <span class="local-time" id="clock">--:--:-- MSK</span>
+          <button class="icon-button" id="refresh-button" title="Обновить данные" aria-label="Обновить данные">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-3L4 10"/><path d="M4 5v5h5"/><path d="M4 13a8 8 0 0 0 14.8 3L20 14"/><path d="M20 19v-5h-5"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-wrap">
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span> ЦЕНТР БЕЗОПАСНОСТИ ДАННЫХ</div>
+            <h1>Состояние контура</h1>
+            <p class="page-description">Согласованность политик и контроль доступа к большим данным</p>
+          </div>
+          <div class="live-state">
+            <span class="live-pulse"><i></i></span>
+            <span><strong>Мониторинг активен</strong><small>Обновление каждые 3 секунды</small></span>
+          </div>
+        </section>
+
+        <section class="service-overview" aria-label="Состояние ключевых сервисов">
+          <article class="service-card" id="hadoop-card">
+            <div class="service-head">
+              <span class="service-icon hadoop-icon">H</span>
+              <span class="service-state" id="hadoop-state"><i></i><span>Проверка</span></span>
+            </div>
+            <div class="service-title">Hadoop</div>
+            <div class="service-subtitle">Кластер хранения и обработки</div>
+            <div class="service-foot"><span>Доступность</span><strong id="hadoop-uptime">—</strong></div>
+            <div class="uptime-track"><i id="hadoop-bar"></i></div>
+          </article>
+          <article class="service-card" id="policy-card">
+            <div class="service-head">
+              <span class="service-icon policy-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 20 6v6c0 5-3.2 8.1-8 9.8-4.8-1.7-8-4.8-8-9.8V6l8-3.2Z"/><path d="m8.7 12 2.1 2.1 4.6-4.6"/></svg>
+              </span>
+              <span class="service-state" id="policy-state"><i></i><span>Проверка</span></span>
+            </div>
+            <div class="service-title">PolicyConsistency</div>
+            <div class="service-subtitle">Реестр политик и точка PDP</div>
+            <div class="service-foot"><span>Доступность</span><strong id="policy-uptime">—</strong></div>
+            <div class="uptime-track"><i id="policy-bar"></i></div>
+          </article>
+          <article class="posture-card">
+            <div class="posture-top">
+              <span class="posture-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v6c0 5-3.2 8.1-8 10-4.8-1.9-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg>
+              </span>
+              <span class="posture-label">РЕЖИМ ЗАЩИТЫ</span>
+            </div>
+            <div class="posture-value">Fail-closed</div>
+            <p>При конфликте политик PDP отказывает в доступе</p>
+            <div class="posture-foot"><span class="green-dot"></span> Принудительное применение активно</div>
+          </article>
+        </section>
+
+        <section class="metrics-section" aria-label="Сводка событий безопасности">
+          <div class="section-title-row">
+            <div><h2>События безопасности</h2><p>Сводка за выбранный период</p></div>
+            <div class="window-switch" role="group" aria-label="Период отображения">
+              <button class="window-button selected" data-window="15m">15 минут</button>
+              <button class="window-button" data-window="1h">1 час</button>
+              <button class="window-button" data-window="24h">24 часа</button>
+            </div>
+          </div>
+          <div class="metric-grid">
+            <article class="metric-card conflict-metric">
+              <div class="metric-top"><span class="metric-label">Конфликты политик</span><span class="metric-icon orange">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 16H3L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg>
+              </span></div>
+              <div class="metric-value-line"><strong id="conflicts-value">0</strong><span class="metric-unit">событий</span></div>
+              <div class="metric-bottom"><span class="metric-dot orange-dot"></span><span>Обнаружено до применения</span><span class="metric-rate" id="conflicts-rate">— / мин</span></div>
+            </article>
+            <article class="metric-card denied-metric">
+              <div class="metric-top"><span class="metric-label">Несанкционированные попытки</span><span class="metric-icon red">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m6 6 12 12"/></svg>
+              </span></div>
+              <div class="metric-value-line"><strong id="denied-value">0</strong><span class="metric-unit">отказов PDP</span></div>
+              <div class="metric-bottom"><span class="metric-dot red-dot"></span><span>Только ответы PDP HTTP 403</span><span class="metric-rate" id="denied-rate">— / мин</span></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="activity-card" id="activity">
+          <div class="activity-header">
+            <div><h2>Активность политик</h2><p>Количество событий по временным интервалам</p></div>
+            <div class="chart-legend"><span><i class="legend-conflict"></i>Конфликты</span><span><i class="legend-denied"></i>Отказы 403</span></div>
+          </div>
+          <div class="chart-wrap">
+            <svg class="activity-chart" id="activity-chart" viewBox="0 0 900 250" role="img" aria-label="График конфликтов политик и отказов PDP">
+              <defs>
+                <linearGradient id="conflict-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#fb923c" stop-opacity=".2"/><stop offset="100%" stop-color="#fb923c" stop-opacity="0"/></linearGradient>
+                <linearGradient id="denied-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#fb7185" stop-opacity=".14"/><stop offset="100%" stop-color="#fb7185" stop-opacity="0"/></linearGradient>
+              </defs>
+              <g id="chart-grid"></g><path id="conflict-area" class="chart-area conflict-area"></path><path id="denied-area" class="chart-area denied-area"></path>
+              <polyline id="conflict-line" class="chart-line conflict-line"></polyline><polyline id="denied-line" class="chart-line denied-line"></polyline>
+              <g id="chart-points"></g>
+            </svg>
+            <div class="chart-y-labels"><span id="y-max">—</span><span id="y-mid">—</span><span>0</span></div>
+          </div>
+          <div class="chart-x-labels" id="chart-x-labels"><span>Начало периода</span><span>Сейчас</span></div>
+          <div class="chart-footnote"><span class="chart-footnote-dot"></span> Данные генерируются в реальном времени · интервал обновления 3 сек.</div>
+        </section>
+
+        <section class="lower-grid">
+          <article class="integration-card" id="integrations">
+            <div class="lower-card-heading"><div><h2>Синхронизация политик</h2><p>Состояние целевых систем</p></div><span class="integration-count"><i></i> 4 системы</span></div>
+            <div class="integration-list">
+              <div class="integration-row"><span class="integration-logo ranger-logo">R</span><span class="integration-name"><strong>Apache Ranger</strong><small>Политики доступа</small></span><span class="sync-status" id="sync-ranger"><i></i><span>Ожидание</span></span></div>
+              <div class="integration-row"><span class="integration-logo hdfs-logo">H</span><span class="integration-name"><strong>HDFS</strong><small>Файловая система</small></span><span class="sync-status" id="sync-hdfs"><i></i><span>Ожидание</span></span></div>
+              <div class="integration-row"><span class="integration-logo acl-logo">A</span><span class="integration-name"><strong>ACL</strong><small>Списки контроля доступа</small></span><span class="sync-status" id="sync-acl"><i></i><span>Ожидание</span></span></div>
+              <div class="integration-row"><span class="integration-logo hive-logo">H</span><span class="integration-name"><strong>Apache Hive</strong><small>Политики на уровне таблиц</small></span><span class="sync-status" id="sync-hive"><i></i><span>Ожидание</span></span></div>
+            </div>
+            <div class="integration-foot"><span>Последняя проверка</span><strong id="last-sync">—</strong></div>
+          </article>
+
+          <article class="events-card">
+            <div class="lower-card-heading"><div><h2>Последние события</h2><p>Поток событий контроля доступа</p></div><span class="event-live"><i></i> LIVE</span></div>
+            <div class="events-list" id="events-list">
+              <div class="empty-events"><span class="mini-spinner"></span>Подключение к потоку событий…</div>
+            </div>
+            <div class="events-foot"><span><i class="event-foot-dot"></i> Сессия мониторинга: <strong id="session-duration">00:00</strong></span><span>Последнее обновление <strong id="last-updated">—</strong></span></div>
+          </article>
+        </section>
+
+        <footer class="page-footer"><span>PolicyConsistency <span class="footer-separator">·</span> Мониторинг согласованности политик</span><span><i></i> Моковые данные · не подключено к production</span></footer>
+      </div>
+    </main>
+  </div>
+  <script src="{% static 'dashboard.js' %}" defer></script>
+</body>
+</html>

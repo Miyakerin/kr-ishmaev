@@ -25,9 +25,14 @@ SECRET_KEY = 'django-insecure-4ju2n@$f9d0c=h)_g0lbb%k9&@rf(xa$d$g$&5ri$uf)*gev^4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.environ["REPLIT_DOMAINS"].split(',')
+ALLOWED_HOSTS = [
+    *(host for host in os.environ.get("REPLIT_DOMAINS", "").split(',') if host),
+    "localhost",
+    "127.0.0.1",
+]
 CSRF_TRUSTED_ORIGINS = [
-    "https://" + domain for domain in os.environ["REPLIT_DOMAINS"].split(',')
+    "https://" + domain for domain in os.environ.get("REPLIT_DOMAINS", "").split(',')
+    if domain
 ]
 
 # Application definition
@@ -60,7 +65,7 @@ ROOT_URLCONF = 'django_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -112,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -122,6 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

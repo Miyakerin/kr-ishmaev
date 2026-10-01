@@ -1,0 +1,1 @@
+- [Django preview hosts](django-preview-hosts.md) — allow 127.0.0.1 and localhost for Replit's proxied browser preview.
