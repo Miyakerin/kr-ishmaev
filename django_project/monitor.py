@@ -10,6 +10,7 @@ import time
 SAMPLE_INTERVAL_SECONDS = 3
 RETENTION_SECONDS = 24 * 60 * 60
 WINDOWS = {
+    "30s": 30,
     "15m": 15 * 60,
     "1h": 60 * 60,
     "24h": 24 * 60 * 60,
